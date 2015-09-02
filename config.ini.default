@@ -1,0 +1,15 @@
+[QUEUE]
+PIPE_FILE = /tmp/xdf_transcode_file_queue
+TIMEOUT = 1
+QUEUE_SIZE = 0
+
+[THREADPOOL]
+NUM = 5
+
+[LOG]
+path = /home/zhangchunyang/local/log/api.log
+info = LOCAL_API
+
+[QINIU]
+access_key = 3U3R4V_FY_xWfoMYPANcyP5VZ2jhsj7p1ymYlMCT
+secret_key = 40ajDfBPH-l7KaDbk0xmyffxV1dX4aS6UKYZGnaY
