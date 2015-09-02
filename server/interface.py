@@ -38,6 +38,7 @@ class Interface(object):
 	def transcode(self,string):
 
 		self.pool.add_job(self._transcode,string)
+		#通知idc_api转码完成
 
 	def _transcode(self,filepath):
 		
