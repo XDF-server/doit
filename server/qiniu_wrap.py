@@ -1,18 +1,19 @@
-# *-* coding:utf-8 *-*
-
+# *-* coding:utf-8 *-* 
 import qiniu
 from qiniu import Auth,BucketManager
-from qiniu import PersistentFop,op_save
+from qiniu import PersistentFop,op_save,put_file,put_data
 import urllib2
-from base import Base
-import os
 from base import Configer
+import os
+from design_model import singleton
 
+@singleton
 class QiniuWrap(object):
 
 	def __init__(self):
+		
+		configer = Configer('')
 
-		configer = Configer('../config.ini')
 		access_key = configer.get_configer('QINIU','access_key')
 		secret_key = configer.get_configer('QINIU','secret_key')
 
@@ -70,9 +71,31 @@ class QiniuWrap(object):
 
 	def upload_file(self,bucket_name,key,localfile):
 
-		token = self.upload_token(bucket_name,key)
+		if bucket_name is None or key is None or localfile is None:
+			return 'sys error'
+
+		token = self.q.upload_token(bucket_name,key)
 
 		ret,info = put_file(token,key,localfile)
+
+		if 200 == info.status_code:
+			return None
+		else:
+			return info.text_body[10:-2]
+	def upload_data(self,bucket_name,key,data):
+
+		if bucket_name is None or key is None or data is None:
+			return 'sys error'
+
+		token = self.q.upload_token(bucket_name,key)
+
+		ret,info = put_data(token,key,data)
+
+		if 200 == info.status_code:
+			return None
+		else:
+			return info.text_body[10:-2]
+
 
         def get_file_info(self,bucket_name,key):
                 bucket_name = bucket_prex + bucket_name
@@ -92,29 +115,34 @@ class QiniuWrap(object):
                 return ret
         
         def del_file(self,bucket_name,key):
-                bucket_name = bucket_prex + bucket_name
+        	bucket_name = bucket_prex + bucket_name
                 ret, info = bucket.delete(bucket_name, key)
                 return ret
 
-	def list_all(self,bucket_name, prefix=None, limit=None):
-	    
+	def get_uptoken(self,bucket_name,key):
+			
+		return self.q.upload_token(bucket_name,key)
+ 		
+	def list_bucket(self,bucket_name):
 		marker = None
-	    	eof = False
-	    
+		eof = False
+		
 		while eof is False:
-			ret,eof,info = self.bucket.list(bucket_name, prefix=prefix, marker=marker, limit=limit)
+			ret, eof, info = self.bucket.list(bucket_name, prefix=prefix, marker=marker, limit=limit)
 			marker = ret.get('marker', None)
+
 			for item in ret['items']:
-			    print(item['key'])
-			    pass
-	
-		if eof is not True:
-			pass
+				print(item['key'])
+				pass
+
+			if eof is not True:
+				# 错误处理
+				pass               
                         
 if __name__ == '__main__':
-        aa = QiniuWrap()
+       	aa = QiniuWrap()
 	#print aa.transcode_h264('fs-rv','rv_hOsImw4283.ori.mp4')
-	aa.list_all('fs-qd')
+	#print aa.upload_file('temp','tmp_12345','server.py')
 
 
 
