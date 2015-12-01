@@ -104,8 +104,11 @@ class Interface(object):
 									html = html.replace(ori_url,qiniu_url)
 
 		if update_flag:
-			effected = mongo.update_many({'question_id':question_id},{'$set':{'content':content}})
-			LOG.info('mongo update successful [%d]' % effected)
+                	mongo.select_collection('mongo_question_json')
+			json_effected = mongo.update_many({'question_id':question_id},{'$set':{'content':content}})
+			mongo.select_collection('mongo_question_html')
+			html_effected = mongo.update_many({'question_id':question_id},{'$set':{'content':html}})
+			LOG.info('mongo update successful json[%d] -- html[%d]' % (json_effected,html_effected))
 			
 	def _upload_qiniu(self,ori_url):
 		from gl import LOG
