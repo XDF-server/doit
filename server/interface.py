@@ -117,7 +117,7 @@ class Interface(object):
 			suffix = ori_url[ori_url.rfind('.'):]	
 			qiniu_file_name = md5(ori_url).hexdigest() + suffix
 			
-			LOG.info('Open Refer Imgage[%s]' % oir_url)
+			LOG.info('Open Refer Imgage[%s]' % ori_url)
 
 			request = urllib2.Request(ori_url)
 			response = urllib2.urlopen(request)
